@@ -39,7 +39,12 @@ class AdminDashboardTest extends TestCase
         $courses = Course::factory()->count(3)->forDepartment($departments->first())->create();
         $exam = Exam::factory()->forCourse($courses->first())->midterm()->create();
         Exam::factory()->forCourse($courses->first())->final()->create();
-        Topic::factory()->count(4)->forExam($exam)->create();
+
+        // Explicit orders: the (exam_id, order) unique constraint means random
+        // order values could collide.
+        foreach ([1, 2, 3, 4] as $order) {
+            Topic::factory()->forExam($exam)->create(['order' => $order]);
+        }
 
         $response = $this->actingAs($this->admin())->get('/admin');
 
@@ -57,7 +62,7 @@ class AdminDashboardTest extends TestCase
         $this->actingAs($this->admin())
             ->get('/admin')
             ->assertOk()
-            ->assertViewHas('counts', fn(array $counts) => array_sum($counts) === 0);
+            ->assertViewHas('counts', fn (array $counts) => array_sum($counts) === 0);
     }
 
     public function test_dashboard_marks_unbuilt_sections_as_coming_soon(): void

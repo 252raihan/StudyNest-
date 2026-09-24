@@ -64,7 +64,7 @@ class DestroyUniversityRequest extends FormRequest
             if ($typed !== $expected) {
                 $validator->errors()->add(
                     'confirmation_name',
-                    'The name you typed does not match "' . $this->university()->name . '". Deletion cancelled.'
+                    'The name you typed does not match "'.$this->university()->name.'". Deletion cancelled.'
                 );
             }
         });

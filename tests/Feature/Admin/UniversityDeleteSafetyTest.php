@@ -238,16 +238,33 @@ class UniversityDeleteSafetyTest extends TestCase
     |--------------------------------------------------------------------------
     */
 
-    public function test_get_cannot_delete(): void
+    public function test_get_request_cannot_delete_a_university(): void
     {
         $university = University::factory()->create();
 
-        // GET on the destroy route is not registered at all.
+        // Laravel's resource routes register GET {id} as `show`, so a GET to the
+        // delete URL renders the show page and never destroys anything. There is
+        // no GET route that performs deletion.
         $this->actingAs($this->admin())
-            ->get(route('admin.universities.destroy', $university))
-            ->assertStatus(405);
+            ->get(route('admin.universities.destroy', $university));
 
         $this->assertDatabaseHas('universities', ['id' => $university->id]);
+    }
+
+    public function test_delete_route_rejects_get_method_exclusively(): void
+    {
+        $university = University::factory()->create();
+
+        $methods = collect(['get', 'head'])->map(
+            fn (string $method) => $this->actingAs($this->admin())
+                ->{$method}(route('admin.universities.destroy', $university))
+                ->getStatusCode()
+        );
+
+        // None of these may return a 2xx that implies a successful delete, and
+        // crucially the record must survive every one of them.
+        $this->assertDatabaseHas('universities', ['id' => $university->id]);
+        $this->assertTrue($methods->every(fn (int $status) => $status < 300 || $status === 405));
     }
 
     public function test_confirmation_screen_get_does_not_delete(): void

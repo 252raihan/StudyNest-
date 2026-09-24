@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 /**
@@ -36,17 +37,13 @@ class AdminRouteAccessTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider adminRoutes
-     */
+    #[DataProvider('adminRoutes')]
     public function test_guest_is_redirected_to_login(string $method, string $uri): void
     {
         $this->{$method}($uri)->assertRedirect(route('login'));
     }
 
-    /**
-     * @dataProvider adminRoutes
-     */
+    #[DataProvider('adminRoutes')]
     public function test_student_receives_403(string $method, string $uri): void
     {
         $student = User::factory()->create(['role' => User::ROLE_STUDENT]);
@@ -56,9 +53,7 @@ class AdminRouteAccessTest extends TestCase
             ->assertForbidden();
     }
 
-    /**
-     * @dataProvider adminRoutes
-     */
+    #[DataProvider('adminRoutes')]
     public function test_admin_is_not_blocked_by_authorization(string $method, string $uri): void
     {
         $admin = User::factory()->admin()->create();

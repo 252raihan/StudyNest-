@@ -22,7 +22,7 @@ class TopicFactory extends Factory
             'exam_id' => Exam::factory(),
             'name' => fake()->unique()->sentence(3),
             'description' => fake()->optional()->sentence(),
-            'order' => fake()->numberBetween(1, 50),
+            'order' => fake()->unique()->numberBetween(1, 100000),
         ];
     }
 

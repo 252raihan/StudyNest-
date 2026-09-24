@@ -26,7 +26,10 @@ class ExamTest extends TestCase
     {
         $course = Course::factory()->create();
 
-        Exam::factory()->count(2)->forCourse($course)->create();
+        // Types are set explicitly: the (course_id, type) unique constraint
+        // means two randomly-typed exams could collide.
+        Exam::factory()->forCourse($course)->midterm()->create();
+        Exam::factory()->forCourse($course)->final()->create();
 
         $this->assertCount(2, $course->exams);
     }

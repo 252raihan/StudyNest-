@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\Course;
 use App\Models\Exam;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Exam>
@@ -19,12 +18,10 @@ class ExamFactory extends Factory
      */
     public function definition(): array
     {
-        $type = fake()->randomElement(Exam::TYPES);
-
         return [
             'course_id' => Course::factory(),
-            'type' => $type,
-            'title' => Str::headline($type).' Examination',
+            'type' => Exam::TYPE_MIDTERM,
+            'title' => 'Midterm Examination',
         ];
     }
 
